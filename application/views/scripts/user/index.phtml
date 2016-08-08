@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <!-- The jQuery library is a prerequisite for all jqSuite products -->
+    <script type="text/ecmascript" src="<?php echo $this->baseUrl(); ?>/static/js/jquery.min.js"></script>
+    <!-- We support more than 40 localizations -->
+    <script type="text/ecmascript"
+            src="<?php echo $this->baseUrl(); ?>/static/js/trirand/i18n/grid.locale-en.js"></script>
+    <!-- This is the Javascript file of jqGrid -->
+    <script type="text/ecmascript"
+            src="<?php echo $this->baseUrl(); ?>/static/js/trirand/jquery.jqGrid.min.js"></script>
+    <!-- A link to a Boostrap  and jqGrid Bootstrap CSS siles-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" media="screen"
+          href="<?php echo $this->baseUrl(); ?>/static/css/trirand/ui.jqgrid-bootstrap.css"/>
+    <script>
+        $.jgrid.defaults.width = 780;
+        $.jgrid.defaults.responsive = true;
+        $.jgrid.defaults.styleUI = 'Bootstrap';
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/ecmascript"
+            src="<?php echo $this->baseUrl(); ?>/static/js/context-menu.js"></script>
+    <link rel="stylesheet" type="text/css" media="screen"
+          href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.11.4/themes/redmond/jquery-ui.css"/>
+    <meta charset="utf-8"/>
+    <title>jqGrid Loading Data - Edit Dialogs with Custom Layout</title>
+</head>
+<body>
+<div style="margin-left:20px">
+    <table id="jqGrid"></table>
+    <div id="jqGridPager"></div>
+</div>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#jqGrid").jqGrid({
+            url: 'http://zend.test.com/user/json',
+            datatype: "json",
+            mtype: "POST",
+            colNames: ["ID", "Name"],
+            colModel: [
+                {
+                    label: 'ID',
+                    name: 'id',
+                    width: 75
+                },
+                {
+                    label: ' Name',
+                    name: 'name',
+                    width: 140,
+                    editable: true, // must set editable to true if you want to make the field editable
+                    // set options related to the layout of the Edit and Add Forms
+                    formoptions: {
+                        colpos: 1, // the position of the column
+                        rowpos: 1, // the position of the row
+                        label: "User Name: " // the label to show for each input control
+                        //elmsuffix: " * " // the suffix to show after that
+                    }
+                }
+
+            ],
+            loadonce:true,
+            width: 780,
+            height: 200,
+            rowNum: 2,
+            rowList: [3, 5, 10],
+            sortname: 'id',
+            sortorder: 'asc',
+            gridview: true,
+            autoencode: true,
+            viewrecords:true,
+            emptyrecords:"No Record in Database .....",
+            pager: "#jqGridPager",
+            onRightClickRow: function (rowid, iRow, iCol, e) {
+                var q=$(e.target).parent('tr').find(':first-child')[0].innerHTML
+                var userID=parseInt(q)
+                $("#jqGrid").contextMenu('myMenu1', {
+                    bindings: {
+                        'edit': function (t) {
+                            console.log(userID);
+                            // console.log(t.id);
+                            $("#jqGrid").jqGrid("editGridRow", userID ,{url:"http://zend.test.com/user/update",closeAfterEdit: true,reloadAfterSubmit:true});
+
+                        },
+                        'del': function (t) {
+                            console.log(userID);
+                            console.log(iRow);
+                            $("#jqGrid").jqGrid("delGridRow", userID ,{url:"http://zend.test.com/user/delete",closeAfterEdit: true,reloadAfterSubmit:true});
+
+                        }
+                    }
+                });
+            },
+            editurl: 'http://zend.test.com/user/add'
+
+        });
+        $('#jqGrid').navGrid('#jqGridPager',
+            // the buttons to appear on the toolbar of the grid
+            {
+                edit: true,
+                add: true,
+                del: true,
+                search: true,
+                refresh: true,
+                view: true,
+                refreshstate: "firstpage",
+                position: "left",
+                cloneToTop: false
+            },
+
+            // options for the Edit Dialog
+            {
+                height: 'auto',
+                width: 620,
+                editCaption: "The Edit Dialog",
+                recreateForm: true,
+                closeAfterEdit: true,
+                extraparam: "edit",
+                onclickSubmit: function (params, postdata) {
+                    var id =$("[id="+postdata['jqGrid_id']+"]").find(':first-child')[0].innerHTML;
+                    var UserId = parseInt(id);
+
+                    $.ajax({
+                        url: "http://zend.test.com/user/update",
+                        data: {
+                            id: UserId,
+                            name: postdata['name']// will be accessible in $_POST['data1']
+                        },
+                        dataType: 'json',
+                        success: function (result) {
+                            console.log(result);
+                        }
+                    });
+
+                },
+                errorTextFormat: function (data) {
+                    return 'Error: ' + data.responseText
+                }
+            },
+            // options for the Add Dialog
+            {
+                height: 'auto',
+                width: 620,
+                closeAfterAdd: true,
+                recreateForm: true,
+                extraparam: "add",
+                errorTextFormat: function (data) {
+                    return 'Error: ' + data.responseText
+                }
+            },
+            // options for the Delete Dailog
+            {
+
+                onclickSubmit: function (params, postdata) {
+                    //console.log($("[id="+postdata+"]").find(':first-child')[0].innerHTML);
+                    var id =$("[id="+postdata+"]").find(':first-child')[0].innerHTML;
+                    var UserId = parseInt(id);
+                    $.ajax({
+                        url: "http://zend.test.com/user/delete",
+                        data: {
+                            id: UserId // will be accessible in $_POST['data1']
+                        },
+                        dataType: 'json',
+                        success: function (result) {
+                        }
+                    });
+
+                },
+                errorTextFormat: function (data) {
+                    return 'Error: ' + data.responseText
+                }
+            },
+            {
+                caption: "Search...",
+                Find: "Find",
+                Reset: "Reset",
+                closeAfterSearch: true,
+                groupOps: [{op: "AND", text: "all"}, {op: "OR", text: "any"}],
+                matchText: " match",
+                rulesText: " rules"
+            }
+        );
+
+
+    });
+
+
+</script>
+<div class="contextMenu" id="myMenu1" style="display:none">
+    <ul style="width: 200px">
+        <li id="add">
+            <span class="ui-icon ui-icon-plus" style="float:left"></span>
+            <span style="font-size:100%; font-family:Verdana">Add Row</span>
+        </li>
+        <li id="edit">
+            <span class="ui-icon ui-icon-pencil" style="float:left"></span>
+            <span style="font-size:100%; font-family:Verdana">Edit Row</span>
+        </li>
+        <li id="del">
+            <span class="ui-icon ui-icon-trash" style="float:left"></span>
+            <span style="font-size:100%; font-family:Verdana">Delete Row</span>
+        </li>
+    </ul>
+</div>
+
+<!-- This code is related to code tabs -->
+<br/>
+<?php echo $this->sayHello("hany", "male");?>
+</body>
+</html>
