@@ -19,6 +19,7 @@
           <actionMethod actionName="json"/>
           <actionMethod actionName="java"/>
           <actionMethod actionName="new"/>
+          <actionMethod actionName="javaDB"/>
         </controllerFile>
       </controllersDirectory>
       <formsDirectory>
@@ -59,10 +60,10 @@
           <viewControllerScriptsDirectory forControllerName="User">
             <viewScriptFile forActionName="java"/>
           </viewControllerScriptsDirectory>
-
           <viewControllerScriptsDirectory forControllerName="User">
             <viewScriptFile forActionName="new"/>
           </viewControllerScriptsDirectory>
+
         </viewScriptsDirectory>
         <viewHelpersDirectory/>
         <viewFiltersDirectory enabled="false"/>

@@ -39,7 +39,14 @@
             url: 'http://zend.test.com/user/json',
             datatype: "json",
             mtype: "POST",
-            colNames: ["ID", "Name"],
+            toolbar:["true","top"],
+            page:1,
+            loadComplete: function() {
+                $("#jqGrid").setColProp('fname', { editoptions: { value: ":All;0.00:0.00;12:12.00;20:20.00;40:40.00;60:60.00;120:120.00"} });
+            },
+            colNames: ["ID", "Image","First Name","Last Name","Nationality","Date of birth","Date of Expiry","Issuer","Gender"
+
+            ," Document Number","Type"],
             colModel: [
                 {
                     label: 'ID',
@@ -47,24 +54,138 @@
                     width: 75
                 },
                 {
-                    label: ' Name',
-                    name: 'name',
-                    width: 140,
+                    name: 'image',
+                    width: 65,
+                    fixed: true,
+                    formatter: function (name) {
+
+                        return "<img width='auto' height='50px' src='data:image/jpeg;base64,"+ name +"' alt='my image' />";
+                    }
+                },
+                {
+                    label: ' First Name',
+                    name: 'lname',
+                    width: 160,
                     editable: true, // must set editable to true if you want to make the field editable
                     // set options related to the layout of the Edit and Add Forms
                     formoptions: {
                         colpos: 1, // the position of the column
                         rowpos: 1, // the position of the row
-                        label: "User Name: " // the label to show for each input control
+                        label: "First Name: " // the label to show for each input control
+                        //elmsuffix: " * " // the suffix to show after that
+                    },
+                    search: true,
+                },
+                {
+                    label: 'Last Name',
+                    name: 'fname',
+                    width: 160,
+                    editable: true, // must set editable to true if you want to make the field editable
+                    // set options related to the layout of the Edit and Add Forms
+                    formoptions: {
+                        colpos: 1, // the position of the column
+                        rowpos: 1, // the position of the row
+                        label: "Last Name: " // the label to show for each input control
+                        //elmsuffix: " * " // the suffix to show after that
+                    }
+                },
+                {
+                    label: 'Nationality',
+                    name: 'national',
+                    width: 160,
+                    editable: true, // must set editable to true if you want to make the field editable
+                    // set options related to the layout of the Edit and Add Forms
+                    formoptions: {
+                        colpos: 1, // the position of the column
+                        rowpos: 1, // the position of the row
+                        label: " Nationality: " // the label to show for each input control
+                        //elmsuffix: " * " // the suffix to show after that
+                    }
+                },
+                {
+                    label: 'Date of birth',
+                    name: 'dof',
+                    width: 160,
+                    editable: true, // must set editable to true if you want to make the field editable
+                    // set options related to the layout of the Edit and Add Forms
+                    formoptions: {
+                        colpos: 1, // the position of the column
+                        rowpos: 1, // the position of the row
+                        label: "Date of birth: " // the label to show for each input control
+                        //elmsuffix: " * " // the suffix to show after that
+                    }
+                },
+                {
+                    label: 'Date of Expiry',
+                    name: 'doe',
+                    width: 200,
+                    editable: true, // must set editable to true if you want to make the field editable
+                    // set options related to the layout of the Edit and Add Forms
+                    formoptions: {
+                        colpos: 1, // the position of the column
+                        rowpos: 1, // the position of the row
+                        label: "Date of Expiry: " // the label to show for each input control
+                        //elmsuffix: " * " // the suffix to show after that
+                    }
+                },
+                {
+                    label: ' Issuer',
+                    name: 'iss',
+                    width: 100,
+                    editable: true, // must set editable to true if you want to make the field editable
+                    // set options related to the layout of the Edit and Add Forms
+                    formoptions: {
+                        colpos: 1, // the position of the column
+                        rowpos: 1, // the position of the row
+                        label: "Issuer: " // the label to show for each input control
+                        //elmsuffix: " * " // the suffix to show after that
+                    }
+                },
+                {
+                    label: ' gender',
+                    name: 'gender',
+                    width: 120,
+                    editable: true, // must set editable to true if you want to make the field editable
+                    // set options related to the layout of the Edit and Add Forms
+                    formoptions: {
+                        colpos: 1, // the position of the column
+                        rowpos: 1, // the position of the row
+                        label: "gender: " // the label to show for each input control
+                        //elmsuffix: " * " // the suffix to show after that
+                    }
+                },
+                {
+                    label: ' Document Number',
+                    name: 'document_no',
+                    width: 200,
+                    editable: true, // must set editable to true if you want to make the field editable
+                    // set options related to the layout of the Edit and Add Forms
+                    formoptions: {
+                        colpos: 1, // the position of the column
+                        rowpos: 1, // the position of the row
+                        label: "Document Number: " // the label to show for each input control
+                        //elmsuffix: " * " // the suffix to show after that
+                    }
+                },
+                {
+                    label: ' Type',
+                    name: 'type',
+                    width: 100,
+                    editable: true, // must set editable to true if you want to make the field editable
+                    // set options related to the layout of the Edit and Add Forms
+                    formoptions: {
+                        colpos: 1, // the position of the column
+                        rowpos: 1, // the position of the row
+                        label: "Type: " // the label to show for each input control
                         //elmsuffix: " * " // the suffix to show after that
                     }
                 }
 
             ],
             loadonce:true,
-            width: 780,
+            width: 1500,
             height: 200,
-            rowNum: 2,
+            rowNum: 10,
             rowList: [3, 5, 10],
             sortname: 'id',
             sortorder: 'asc',
@@ -96,6 +217,11 @@
             editurl: 'http://zend.test.com/user/add'
 
         });
+        /*$('#jqGrid').jqGrid('filterToolbar',{
+            // JSON stringify all data from search, including search toolbar operators
+            stringResult: true
+            // instuct the grid toolbar to show the search options
+        });*/
         $('#jqGrid').navGrid('#jqGridPager',
             // the buttons to appear on the toolbar of the grid
             {

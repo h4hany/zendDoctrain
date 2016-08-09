@@ -59,7 +59,6 @@ class UserController extends Zend_Controller_Action
     public function jsonAction()
     {
         // action body
-        //searchField=invid&searchString=123&searchOper=eq
         $searchField = $this->getRequest()->getParam("searchString");
         $searchString = $this->getRequest()->getParam("searchField");
         $searchOper = $this->getRequest()->getParam("searchOper");
@@ -110,27 +109,33 @@ class UserController extends Zend_Controller_Action
         $password = $this->getRequest()->getParam("password");
 
 
-
         $q = Doctrine_Query::create()
             ->select("*")
-            ->from("Model_Student ")->where("username = $username ")->andWhere("password = $password");
+            ->from("Model_UsersAuth ")->where("username = '$username' ")->andWhere("password = '$password'");
+        $row = $q->execute();
 
-        if ($q->getSqlQuery()) {
+        if (sizeof($row) !== 0) {
 
             echo "AUTH";
 
         } else {
 
-            echo "not save";
+            echo "Not Auth";
 
         }
     }
 
-
-
     public function newAction()
     {
+        /*$data
+                $data = str_replace('data:image/png;base64,', '', $data);
+                $data = str_replace(' ', '+', $data);
+                $data = base64_decode($data); // Decode image using base64_decode
+                $file = uniqid() . '.null'; //Now you can put this image data to your desired file using file_put_contents function like below:
+                $success = file_put_contents($file, $data);*/
         // action body
+        $passPort = new Model_Student();
+
         $type = $this->getRequest()->getParam("Type");
         $docNo = $this->getRequest()->getParam("DocumentNumber");
         $dof = $this->getRequest()->getParam("DateofBirth");
@@ -140,31 +145,41 @@ class UserController extends Zend_Controller_Action
         $fname = $this->getRequest()->getParam("LastNames");
         $lname = $this->getRequest()->getParam("FirstNames");
         $gender = $this->getRequest()->getParam("Gender");
-        echo $type . "\n";
-        echo $docNo. "\n" ;
-        echo $dof . "\n";
-        echo $doe . "\n";
-        echo $iss . "\n";
-        echo $national. "\n" ;
-        echo $fname . "\n";
-        echo $lname . "\n";
-        echo $gender. "\n" ;
+        $img = $this->getRequest()->getParam("image");
 
-        //            $passPort = new Model_Student();
-//            $passPort->type = $type;
-//            $passPort->docNo = $docNo;
-//            $passPort->dof = $dof;
-//            $passPort->doe = $doe;
-//            $passPort->iss = $iss;
-//            $passPort->national = $national;
-//            $passPort->fname = $fname;
-//            $passPort->lname = $lname;
-//            $passPort->gender = $gender;
-//            $passPort->save();
+        //  echo $type . "\n";
+        //echo $docNo. "\n" ;
+        // echo $dof . "\n";
+        //  echo $doe . "\n";
+        //  echo $iss . "\n";
+        //  echo $national. "\n" ;
+        //  echo $fname . "\n";
+        //  echo $lname . "\n";
+        //   echo $gender. "\n" ;
+        $data = str_replace('data:image/png;base64,', '', $img);
+        $data = str_replace(' ', '+', $data);
+        //$data = base64_decode($data); // Decode image using base64_decode
+       // $file = PUBLIC_PATH."/static/upload/".uniqid() . '.null'; //Now you can put this image data to your desired file using file_put_contents function like below:
+        //file_put_contents($file, $data);
+        $passPort->type = $type;
+        $passPort->document_no = $docNo;
+        $passPort->dof = $dof;
+        $passPort->doe = $doe;
+        $passPort->iss = $iss;
+        $passPort->national = $national;
+        $passPort->fname = $fname;
+        $passPort->lname = $lname;
+        $passPort->gender = $gender;
+        $passPort->image = $data;
+        $passPort->save();
+
+
     }
 
 
 }
+
+
 
 
 
