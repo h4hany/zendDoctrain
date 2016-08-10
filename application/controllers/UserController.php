@@ -176,8 +176,30 @@ class UserController extends Zend_Controller_Action
 
     }
 
+    public function getFirstnameAction()
+    {
+        // action body
+    }
+
+    public function fnamesAction()
+    {
+        // action body
+        $q = Doctrine_Query::create()
+            ->select("fname")
+            ->from("Model_Student ");
+
+
+
+        echo json_encode($q->fetchArray());
+
+    }
+
 
 }
+
+
+
+
 
 
 

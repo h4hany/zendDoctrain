@@ -20,6 +20,8 @@
           <actionMethod actionName="java"/>
           <actionMethod actionName="new"/>
           <actionMethod actionName="javaDB"/>
+          <actionMethod actionName="getFirstname"/>
+          <actionMethod actionName="fnames"/>
         </controllerFile>
       </controllersDirectory>
       <formsDirectory>
@@ -63,7 +65,9 @@
           <viewControllerScriptsDirectory forControllerName="User">
             <viewScriptFile forActionName="new"/>
           </viewControllerScriptsDirectory>
-
+          <viewControllerScriptsDirectory forControllerName="User">
+            <viewScriptFile forActionName="fnames"/>
+          </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>
         <viewFiltersDirectory enabled="false"/>

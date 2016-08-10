@@ -35,18 +35,70 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
+        var grid = $("#jqGrid");
+        buildSearchSelect = function (uniqueNames) {
+            var values = ":All";
+          //  console.log("after " + uniqueNames);
+            $.each (uniqueNames, function() {
+                values += ";" + this + ":" + this;
+               // console.log("this" + this);
+            });
+
+
+            return values;
+        },
+            getUniqueNames = function (columnName) {
+               var texts =[];
+                $.ajax({
+                    url: "http://zend.test.com/user/fnames",
+
+                    dataType: 'json',
+                    async:false,
+                    success: function (result) {
+                        //console.log(result);
+                        $.each(result, function () {
+                           // console.log(this.fname);
+                            texts.push(this.fname);
+                        });
+                       // console.log(texts)
+                    }
+                });
+                //  console.log("length "+texts.length);
+                var uniqueTexts = [],
+                    textsLength = texts.length, text, textsMap = {}, i;
+                for (i = 0; i < textsLength; i++) {
+                    text = texts[i];
+                    if (text !== undefined && textsMap[text] === undefined) {
+                        // to test whether the texts is unique we place it in the map.
+                        textsMap[text] = true;
+                        uniqueTexts.push(text);
+                    }
+                   // console.log("un text" + uniqueTexts);
+
+                }
+                return uniqueTexts;
+            },
+            setSearchSelect = function (columnName) {
+                grid.jqGrid('setColProp', columnName,
+                    {
+                        stype: 'select',
+                        searchoptions: {
+                            value: buildSearchSelect(getUniqueNames(columnName)),
+                            sopt: ['eq']
+                        }
+                    }
+                );
+            };
+
         $("#jqGrid").jqGrid({
             url: 'http://zend.test.com/user/json',
             datatype: "json",
             mtype: "POST",
-            toolbar:["true","top"],
-            page:1,
-            loadComplete: function() {
-                $("#jqGrid").setColProp('fname', { editoptions: { value: ":All;0.00:0.00;12:12.00;20:20.00;40:40.00;60:60.00;120:120.00"} });
-            },
-            colNames: ["ID", "Image","First Name","Last Name","Nationality","Date of birth","Date of Expiry","Issuer","Gender"
+            toolbar: ["true", "top"],
+            page: 1,
+            colNames: ["ID", "Image", "First Name", "Last Name", "Nationality", "Date of birth", "Date of Expiry", "Issuer", "Gender"
 
-            ," Document Number","Type"],
+                , " Document Number", "Type"],
             colModel: [
                 {
                     label: 'ID',
@@ -59,7 +111,7 @@
                     fixed: true,
                     formatter: function (name) {
 
-                        return "<img width='auto' height='50px' src='data:image/jpeg;base64,"+ name +"' alt='my image' />";
+                        return "<img width='auto' height='50px' src='data:image/jpeg;base64," + name + "' alt='my image' />";
                     }
                 },
                 {
@@ -182,7 +234,7 @@
                 }
 
             ],
-            loadonce:true,
+            loadonce: true,
             width: 1500,
             height: 200,
             rowNum: 10,
@@ -191,24 +243,32 @@
             sortorder: 'asc',
             gridview: true,
             autoencode: true,
-            viewrecords:true,
-            emptyrecords:"No Record in Database .....",
+            viewrecords: true,
+            emptyrecords: "No Record in Database .....",
             pager: "#jqGridPager",
             onRightClickRow: function (rowid, iRow, iCol, e) {
-                var q=$(e.target).parent('tr').find(':first-child')[0].innerHTML
-                var userID=parseInt(q)
+                var q = $(e.target).parent('tr').find(':first-child')[0].innerHTML
+                var userID = parseInt(q)
                 $("#jqGrid").contextMenu('myMenu1', {
                     bindings: {
                         'edit': function (t) {
                             console.log(userID);
                             // console.log(t.id);
-                            $("#jqGrid").jqGrid("editGridRow", userID ,{url:"http://zend.test.com/user/update",closeAfterEdit: true,reloadAfterSubmit:true});
+                            $("#jqGrid").jqGrid("editGridRow", userID, {
+                                url: "http://zend.test.com/user/update",
+                                closeAfterEdit: true,
+                                reloadAfterSubmit: true
+                            });
 
                         },
                         'del': function (t) {
                             console.log(userID);
                             console.log(iRow);
-                            $("#jqGrid").jqGrid("delGridRow", userID ,{url:"http://zend.test.com/user/delete",closeAfterEdit: true,reloadAfterSubmit:true});
+                            $("#jqGrid").jqGrid("delGridRow", userID, {
+                                url: "http://zend.test.com/user/delete",
+                                closeAfterEdit: true,
+                                reloadAfterSubmit: true
+                            });
 
                         }
                     }
@@ -217,11 +277,12 @@
             editurl: 'http://zend.test.com/user/add'
 
         });
-        /*$('#jqGrid').jqGrid('filterToolbar',{
-            // JSON stringify all data from search, including search toolbar operators
-            stringResult: true
-            // instuct the grid toolbar to show the search options
-        });*/
+        setSearchSelect('fname');
+       // console.log($("#jqGrid").getCol('getCol', "national",false));
+
+        grid.jqGrid('filterToolbar',
+            {stringResult: true, searchOnEnter: true, defaultSearch: "cn"});
+
         $('#jqGrid').navGrid('#jqGridPager',
             // the buttons to appear on the toolbar of the grid
             {
@@ -245,7 +306,7 @@
                 closeAfterEdit: true,
                 extraparam: "edit",
                 onclickSubmit: function (params, postdata) {
-                    var id =$("[id="+postdata['jqGrid_id']+"]").find(':first-child')[0].innerHTML;
+                    var id = $("[id=" + postdata['jqGrid_id'] + "]").find(':first-child')[0].innerHTML;
                     var UserId = parseInt(id);
 
                     $.ajax({
@@ -281,7 +342,7 @@
 
                 onclickSubmit: function (params, postdata) {
                     //console.log($("[id="+postdata+"]").find(':first-child')[0].innerHTML);
-                    var id =$("[id="+postdata+"]").find(':first-child')[0].innerHTML;
+                    var id = $("[id=" + postdata + "]").find(':first-child')[0].innerHTML;
                     var UserId = parseInt(id);
                     $.ajax({
                         url: "http://zend.test.com/user/delete",
@@ -333,6 +394,6 @@
 
 <!-- This code is related to code tabs -->
 <br/>
-<?php echo $this->sayHello("hany", "male");?>
+<?php echo $this->sayHello("hany", "male"); ?>
 </body>
 </html>
